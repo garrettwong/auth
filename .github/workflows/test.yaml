@@ -163,24 +163,24 @@ jobs:
     #   run: |-
     #     gcloud secrets versions access "latest" --secret "${{ secrets.OIDC_AUTH_TEST_SECRET_NAME }}"
 
-    # - id: 'auth-access-token'
-    #   name: 'auth-access-token'
-    #   uses: './'
-    #   with:
-    #     workload_identity_provider: '${{ secrets.WIF_PROVIDER_NAME }}'
-    #     service_account: '${{ secrets.OIDC_AUTH_SA_EMAIL }}'
-    #     audience: 'workload_identity_provider'
-    #     token_format: 'access_token'
+    - id: 'auth-access-token'
+      name: 'auth-access-token'
+      uses: './'
+      with:
+        workload_identity_provider: '${{ secrets.WIF_PROVIDER_NAME }}'
+        service_account: '${{ secrets.OIDC_AUTH_SA_EMAIL }}'
+        audience: '//iam.googleapis.com/projects/268323096258/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
+        token_format: 'access_token'
 
-    # - id: 'access-token'
-    #   name: 'access-token'
-    #   shell: 'bash'
-    #   run: |-
-    #     curl https://secretmanager.googleapis.com/v1/projects/${{ steps.auth-access-token.outputs.project_id }}/secrets/${{ secrets.OIDC_AUTH_TEST_SECRET_NAME }}/versions/latest:access \
-    #       --silent \
-    #       --show-error \
-    #       --fail \
-    #       --header "Authorization: Bearer ${{ steps.auth-access-token.outputs.access_token }}"
+    - id: 'access-token'
+      name: 'access-token'
+      shell: 'bash'
+      run: |-
+        curl https://secretmanager.googleapis.com/v1/projects/${{ steps.auth-access-token.outputs.project_id }}/secrets/${{ secrets.OIDC_AUTH_TEST_SECRET_NAME }}/versions/latest:access \
+          --silent \
+          --show-error \
+          --fail \
+          --header "Authorization: Bearer ${{ steps.auth-access-token.outputs.access_token }}"
 
     - id: 'auth-id-token'
       name: 'auth-id-token'
