@@ -145,13 +145,13 @@ jobs:
       with:
         node-version: '12.x'
 
-    - id: 'auth-default'
-      name: 'auth-default'
-      uses: './'
-      with:
-        workload_identity_provider: '${{ secrets.WIF_PROVIDER_NAME }}'
-        service_account: '${{ secrets.OIDC_AUTH_SA_EMAIL }}'
-        audience: 'workload_identity_provider'
+    # - id: 'auth-default'
+    #   name: 'auth-default'
+    #   uses: './'
+    #   with:
+    #     workload_identity_provider: '${{ secrets.WIF_PROVIDER_NAME }}'
+    #     service_account: '${{ secrets.OIDC_AUTH_SA_EMAIL }}'
+    #     audience: 'workload_identity_provider'
 
     - id: 'setup-gcloud'
       name: 'setup-gcloud'
@@ -169,6 +169,7 @@ jobs:
       with:
         workload_identity_provider: '${{ secrets.WIF_PROVIDER_NAME }}'
         service_account: '${{ secrets.OIDC_AUTH_SA_EMAIL }}'
+        audience: 'workload_identity_provider'
         token_format: 'access_token'
 
     - id: 'access-token'
