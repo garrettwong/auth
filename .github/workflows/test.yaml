@@ -151,6 +151,7 @@ jobs:
       with:
         workload_identity_provider: '${{ secrets.WIF_PROVIDER_NAME }}'
         service_account: '${{ secrets.OIDC_AUTH_SA_EMAIL }}'
+        audience: 'workload_identity_provider'
 
     - id: 'setup-gcloud'
       name: 'setup-gcloud'
