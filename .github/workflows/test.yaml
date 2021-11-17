@@ -156,11 +156,11 @@ jobs:
       name: 'setup-gcloud'
       uses: 'google-github-actions/setup-gcloud@master'
 
-    - id: 'gcloud'
-      name: 'gcloud'
-      shell: 'bash'
-      run: |-
-        gcloud secrets versions access "latest" --secret "${{ secrets.OIDC_AUTH_TEST_SECRET_NAME }}"
+    # - id: 'gcloud'
+    #   name: 'gcloud'
+    #   shell: 'bash'
+    #   run: |-
+    #     gcloud secrets versions access "latest" --secret "${{ secrets.OIDC_AUTH_TEST_SECRET_NAME }}"
 
     - id: 'auth-access-token'
       name: 'auth-access-token'
