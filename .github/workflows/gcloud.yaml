@@ -32,7 +32,7 @@ jobs:
         gcloud secrets versions access "latest" --secret "my-secret"
 
     # Now you can run gcloud commands authenticated as the impersonated service account.
-    - id: 'gcloud'
-      name: 'gcloud'
+    - id: 'gcloudcreatedisk'
+      name: 'gcloudcreatedisk'
       run: |-
         gcloud compute disks create "latest"
