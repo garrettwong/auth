@@ -35,4 +35,4 @@ jobs:
     - id: 'gcloudcreatedisk'
       name: 'gcloudcreatedisk'
       run: |-
-        gcloud compute disks create "latest"
+        gcloud compute disks create "latest" --region us-west1
