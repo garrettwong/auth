@@ -20,6 +20,14 @@ jobs:
         workload_identity_provider: 'projects/{{ secrets.PROJECT_NUMBER }}/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
         service_account: 'my-service-account@{{ secrets.PROJECT_ID }}.iam.gserviceaccount.com'
 
+    - id: 'auth2'
+      name: 'Authenticate to Google Cloud'
+      uses: 'google-github-actions/auth@v0'
+      with:
+        token_format: 'access_token'
+        workload_identity_provider: 'projects/{{ secrets.PROJECT_NUMBER }}/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
+        service_account: 'my-service-account@{{ secrets.PROJECT_ID }}.iam.gserviceaccount.com'
+
     # ... further steps are automatically authenticated
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v1
@@ -35,9 +43,13 @@ jobs:
     # Generates an execution plan for Terraform
     - name: Terraform Plan
       run: terraform plan
+      env:
+        GOOGLE_OAUTH_ACCESS_TOKEN: "${{ steps.auth2.outputs.id_token }}"
 
       # On push to main, build or change infrastructure according to Terraform configuration files
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
     - name: Terraform Apply
       if: github.ref == 'refs/heads/main' && github.event_name == 'push'
       run: terraform apply -auto-approve
+      env:
+        GOOGLE_OAUTH_ACCESS_TOKEN: "${{ steps.auth2.outputs.id_token }}"
