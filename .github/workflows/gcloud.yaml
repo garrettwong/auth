@@ -1,0 +1,32 @@
+name: GCLOUD
+on: [push]
+jobs:
+  _asdf:
+    runs-on: 'ubuntu-latest'
+
+    # Add "id-token" with the intended permissions.
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+    # actions/checkout MUST come before auth
+    - uses: 'actions/checkout@v2'
+
+    # Configure Workload Identity Federation via a credentials file.
+    - id: 'auth'
+      name: 'Authenticate to Google Cloud'
+      uses: 'google-github-actions/auth@v0'
+      with:
+        workload_identity_provider: 'projects/89279074870/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
+        service_account: 'my-service-account@devops-6a23.iam.gserviceaccount.com'
+
+    # Install gcloud, `setup-gcloud` automatically picks up authentication from `auth`.
+    - name: 'Set up Cloud SDK'
+      uses: 'google-github-actions/setup-gcloud@v0'
+
+    # Now you can run gcloud commands authenticated as the impersonated service account.
+    - id: 'gcloud'
+      name: 'gcloud'
+      run: |-
+        gcloud secrets versions access "latest" --secret "my-secret"
