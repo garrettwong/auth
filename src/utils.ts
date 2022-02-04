@@ -1,76 +1,55 @@
-import { promises as fs } from 'fs';
-import crypto from 'crypto';
-import path from 'path';
+'use strict';
+
+import { randomFilename } from '@google-github-actions/actions-utils';
 
 /**
- * writeSecureFile writes a file to disk in a given directory with a
- * random name.
+ * buildDomainWideDelegationJWT constructs an _unsigned_ JWT to be used for a
+ * DWD exchange. The JWT must be signed and then exchanged with the OAuth
+ * endpoints for a token.
  *
- * @param outputDir Directory to create random file in.
- * @param data Data to write to file.
- * @returns Path to written file.
+ * @param serviceAccount Email address of the service account.
+ * @param subject Email address to use for impersonation.
+ * @param scopes List of scopes to authorize.
+ * @param lifetime Number of seconds for which the JWT should be valid.
  */
-export async function writeSecureFile(outputDir: string, data: string): Promise<string> {
-  // Generate a random filename to store the credential. 12 bytes is 24
-  // characters in hex. It's not the ideal entropy, but we have to be under
-  // the 255 character limit for Windows filenames (which includes their
-  // entire leading path).
-  const uniqueName = crypto.randomBytes(12).toString('hex');
-  const pth = path.join(outputDir, uniqueName);
+export function buildDomainWideDelegationJWT(
+  serviceAccount: string,
+  subject: string | undefined | null,
+  scopes: Array<string> | undefined | null,
+  lifetime: number,
+): string {
+  const now = Math.floor(new Date().getTime() / 1000);
 
-  // Write the file as 0640 so the owner has RW, group as R, and the file is
-  // otherwise unreadable. Also write with EXCL to prevent a symlink attack.
-  await fs.writeFile(pth, data, { mode: 0o640, flag: 'wx' });
-
-  return pth;
-}
-
-/**
- * Converts a multi-line or comma-separated collection of strings into an array
- * of trimmed strings.
- */
-export function explodeStrings(input: string): Array<string> {
-  if (input == null || input.length === 0) {
-    return [];
+  const body: Record<string, string | number> = {
+    iss: serviceAccount,
+    aud: 'https://oauth2.googleapis.com/token',
+    iat: now,
+    exp: now + lifetime,
+  };
+  if (subject && subject.trim().length > 0) {
+    body.sub = subject;
+  }
+  if (scopes && scopes.length > 0) {
+    // Yes, this is a space delimited list.
+    // Not a typo, the API expects the field to be "scope" (singular).
+    body.scope = scopes.join(' ');
   }
 
-  const list = new Array<string>();
-  for (const line of input.split(`\n`)) {
-    for (const piece of line.split(',')) {
-      const entry = piece.trim();
-      if (entry !== '') {
-        list.push(entry);
-      }
-    }
-  }
-  return list;
+  return JSON.stringify(body);
 }
 
 /**
- * toBase64 base64 URL encodes the result.
+ * generateCredentialsFilename creates a predictable filename under which
+ * credentials are written. This string is the filename, not the filepath. It must match the format:
+ *
+ *     gha-creds-[a-z0-9]{16}.json
+ *
+ * For example:
+ *
+ *     gha-creds-ef801c3bb35b52e5.json
+ *
+ * @return Filename
  */
-export function toBase64(s: string | Buffer): string {
-  return Buffer.from(s)
-    .toString('base64')
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/, '');
-}
-
-/**
- * fromBase64 base64 decodes the result, taking into account URL and standard
- * encoding with and without padding.
- */
-export function fromBase64(s: string): string {
-  const str = s.replace(/-/g, '+').replace(/_/g, '/');
-  while (str.length % 4) s += '=';
-  return Buffer.from(str, 'base64').toString('utf8');
-}
-
-/**
- * trimmedString returns a string trimmed of whitespace. If the input string is
- * null, then it returns the empty string.
- */
-export function trimmedString(s: string): string {
-  return s ? s.trim() : '';
+export function generateCredentialsFilename(): string {
+  return 'gha-creds-' + randomFilename(8) + '.json';
 }

@@ -1,8 +1,14 @@
+'use strict';
+
 import 'mocha';
 import { expect } from 'chai';
 
 import { tmpdir } from 'os';
+import { join as pathjoin } from 'path';
 import { readFileSync } from 'fs';
+
+import { randomFilename } from '@google-github-actions/actions-utils';
+
 import { WorkloadIdentityClient } from '../../src/client/workload_identity_client';
 
 describe('WorkloadIdentityClient', () => {
@@ -13,6 +19,8 @@ describe('WorkloadIdentityClient', () => {
         token: 'my-token',
         serviceAccount: 'my-service@my-project.iam.gserviceaccount.com',
         audience: 'my-aud',
+        oidcTokenRequestURL: 'https://example.com/',
+        oidcTokenRequestToken: 'token',
       });
 
       const result = await client.getProjectID();
@@ -26,6 +34,8 @@ describe('WorkloadIdentityClient', () => {
         token: 'my-token',
         serviceAccount: 'my-service@my-project.iam.gserviceaccount.com',
         audience: 'my-aud',
+        oidcTokenRequestURL: 'https://example.com/',
+        oidcTokenRequestToken: 'token',
       });
 
       const result = await client.getProjectID();
@@ -39,6 +49,8 @@ describe('WorkloadIdentityClient', () => {
           token: 'my-token',
           serviceAccount: 'my-service@developers.google.com',
           audience: 'my-aud',
+          oidcTokenRequestURL: 'https://example.com/',
+          oidcTokenRequestToken: 'token',
         });
       };
       return expect(fn).to.throw(Error);
@@ -53,6 +65,8 @@ describe('WorkloadIdentityClient', () => {
         serviceAccount: 'my-service@my-project.iam.gserviceaccount.com',
         token: 'my-token',
         audience: 'my-aud',
+        oidcTokenRequestURL: 'https://example.com/',
+        oidcTokenRequestToken: 'token',
       });
       const result = await client.getServiceAccount();
       expect(result).to.eq('my-service@my-project.iam.gserviceaccount.com');
@@ -61,16 +75,15 @@ describe('WorkloadIdentityClient', () => {
 
   describe('#createCredentialsFile', () => {
     it('writes the file', async () => {
-      process.env.ACTIONS_ID_TOKEN_REQUEST_URL = 'https://actions-token.url';
-      process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN = 'github-token';
-
-      const tmp = tmpdir();
+      const outputFile = pathjoin(tmpdir(), randomFilename());
       const client = new WorkloadIdentityClient({
         projectID: 'my-project',
         providerID: 'my-provider',
         serviceAccount: 'my-service@my-project.iam.gserviceaccount.com',
         token: 'my-token',
         audience: 'my-aud',
+        oidcTokenRequestURL: 'https://example.com/',
+        oidcTokenRequestToken: 'token',
       });
 
       const exp = {
@@ -81,9 +94,9 @@ describe('WorkloadIdentityClient', () => {
             type: 'json',
           },
           headers: {
-            Authorization: 'Bearer github-token',
+            Authorization: 'Bearer token',
           },
-          url: 'https://actions-token.url/?audience=my-aud',
+          url: 'https://example.com/?audience=my-aud',
         },
         service_account_impersonation_url:
           'https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/my-service@my-project.iam.gserviceaccount.com:generateAccessToken',
@@ -92,7 +105,7 @@ describe('WorkloadIdentityClient', () => {
         type: 'external_account',
       };
 
-      const pth = await client.createCredentialsFile(tmp);
+      const pth = await client.createCredentialsFile(outputFile);
       const data = readFileSync(pth);
       const got = JSON.parse(data.toString('utf8'));
 

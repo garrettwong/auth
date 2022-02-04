@@ -1,8 +1,15 @@
 'use strict';
 
 import { createSign } from 'crypto';
+import {
+  isServiceAccountKey,
+  parseCredential,
+  ServiceAccountKey,
+  toBase64,
+  writeSecureFile,
+} from '@google-github-actions/actions-utils';
+
 import { AuthClient } from './auth_client';
-import { toBase64, fromBase64, trimmedString, writeSecureFile } from '../utils';
 
 /**
  * Available options to create the CredentialsJSONClient.
@@ -22,49 +29,16 @@ interface CredentialsJSONClientOptions {
  */
 export class CredentialsJSONClient implements AuthClient {
   readonly #projectID: string;
-  readonly #credentials: Record<string, string>;
+  readonly #credentials: ServiceAccountKey;
 
   constructor(opts: CredentialsJSONClientOptions) {
-    this.#credentials = this.parseServiceAccountKeyJSON(opts.credentialsJSON);
-    this.#projectID = opts.projectID || this.#credentials['project_id'];
-  }
-
-  /**
-   * parseServiceAccountKeyJSON attempts to parse the given string as a service
-   * account key JSON. It handles if the string is base64-encoded.
-   */
-  parseServiceAccountKeyJSON(str: string): Record<string, string> {
-    str = trimmedString(str);
-    if (!str) {
-      throw new Error(`Missing service account key JSON (got empty value)`);
+    const credentials = parseCredential(opts.credentialsJSON);
+    if (!isServiceAccountKey(credentials)) {
+      throw new Error(`Provided credential is not a valid service account key JSON`);
     }
+    this.#credentials = credentials;
 
-    // If the string doesn't start with a JSON object character, it is probably
-    // base64-encoded.
-    if (!str.startsWith('{')) {
-      str = fromBase64(str);
-    }
-
-    let creds: Record<string, string>;
-    try {
-      creds = JSON.parse(str);
-    } catch (e) {
-      throw new SyntaxError(`Failed to parse credentials as JSON: ${e}`);
-    }
-
-    const requireValue = (key: string) => {
-      const val = trimmedString(creds[key]);
-      if (!val) {
-        throw new Error(`Service account key JSON is missing required field "${key}"`);
-      }
-    };
-
-    requireValue('project_id');
-    requireValue('private_key_id');
-    requireValue('private_key');
-    requireValue('client_email');
-
-    return creds;
+    this.#projectID = opts.projectID || this.#credentials.project_id;
   }
 
   /**
@@ -74,14 +48,14 @@ export class CredentialsJSONClient implements AuthClient {
     const header = {
       alg: 'RS256',
       typ: 'JWT',
-      kid: this.#credentials['private_key_id'],
+      kid: this.#credentials.private_key_id,
     };
 
     const now = Math.floor(new Date().getTime() / 1000);
 
     const body = {
-      iss: this.#credentials['client_email'],
-      sub: this.#credentials['client_email'],
+      iss: this.#credentials.client_email,
+      sub: this.#credentials.client_email,
       aud: 'https://iamcredentials.googleapis.com/',
       iat: now,
       exp: now + 3599,
@@ -94,10 +68,37 @@ export class CredentialsJSONClient implements AuthClient {
       signer.write(message);
       signer.end();
 
-      const signature = signer.sign(this.#credentials['private_key']);
+      const signature = signer.sign(this.#credentials.private_key);
       return message + '.' + toBase64(signature);
-    } catch (e) {
-      throw new Error(`Failed to sign auth token: ${e}`);
+    } catch (err) {
+      throw new Error(`Failed to sign auth token using ${await this.getServiceAccount()}: ${err}`);
+    }
+  }
+
+  /**
+   * signJWT signs the given JWT with the private key.
+   *
+   * @param unsignedJWT The JWT to sign.
+   */
+  async signJWT(unsignedJWT: string): Promise<string> {
+    const header = {
+      alg: 'RS256',
+      typ: 'JWT',
+      kid: this.#credentials.private_key_id,
+    };
+
+    const message = toBase64(JSON.stringify(header)) + '.' + toBase64(unsignedJWT);
+
+    try {
+      const signer = createSign('RSA-SHA256');
+      signer.write(message);
+      signer.end();
+
+      const signature = signer.sign(this.#credentials.private_key);
+      const jwt = message + '.' + toBase64(signature);
+      return jwt;
+    } catch (err) {
+      throw new Error(`Failed to sign JWT using ${await this.getServiceAccount()}: ${err}`);
     }
   }
 
@@ -115,14 +116,14 @@ export class CredentialsJSONClient implements AuthClient {
    * extracted from the Service Account Key JSON.
    */
   async getServiceAccount(): Promise<string> {
-    return this.#credentials['client_email'];
+    return this.#credentials.client_email;
   }
 
   /**
    * createCredentialsFile creates a Google Cloud credentials file that can be
    * set as GOOGLE_APPLICATION_CREDENTIALS for gcloud and client libraries.
    */
-  async createCredentialsFile(outputDir: string): Promise<string> {
-    return await writeSecureFile(outputDir, JSON.stringify(this.#credentials));
+  async createCredentialsFile(outputPath: string): Promise<string> {
+    return await writeSecureFile(outputPath, JSON.stringify(this.#credentials));
   }
 }

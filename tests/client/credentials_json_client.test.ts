@@ -1,8 +1,14 @@
+'use strict';
+
 import 'mocha';
 import { expect } from 'chai';
 
-import { tmpdir } from 'os';
+import { join as pathjoin } from 'path';
 import { readFileSync } from 'fs';
+import { tmpdir } from 'os';
+
+import { randomFilename } from '@google-github-actions/actions-utils';
+
 import { CredentialsJSONClient } from '../../src/client/credentials_json_client';
 
 // Yes, this is a real private key. No, it's not valid for authenticating
@@ -52,7 +58,18 @@ describe('CredentialsJSONClient', () => {
       });
 
       const token = await client.getAuthToken();
-      expect(token).to.not.be.null;
+      expect(token).to.be;
+    });
+  });
+
+  describe('#signJWT', () => {
+    it('signs a jwt', async () => {
+      const client = new CredentialsJSONClient({
+        credentialsJSON: credentialsJSON,
+      });
+
+      const token = await client.signJWT('thisismy.jwt');
+      expect(token).to.be;
     });
   });
 
@@ -90,14 +107,14 @@ describe('CredentialsJSONClient', () => {
 
   describe('#createCredentialsFile', () => {
     it('writes the file', async () => {
-      const tmp = tmpdir();
+      const outputFile = pathjoin(tmpdir(), randomFilename());
       const client = new CredentialsJSONClient({
         credentialsJSON: credentialsJSON,
       });
 
       const exp = JSON.parse(credentialsJSON);
 
-      const pth = await client.createCredentialsFile(tmp);
+      const pth = await client.createCredentialsFile(outputFile);
       const data = readFileSync(pth);
       const got = JSON.parse(data.toString('utf8'));
 

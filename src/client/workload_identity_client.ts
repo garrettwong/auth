@@ -1,8 +1,9 @@
 'use strict';
 
 import { URL } from 'url';
+import { writeSecureFile } from '@google-github-actions/actions-utils';
+
 import { AuthClient } from './auth_client';
-import { writeSecureFile } from '../utils';
 import { BaseClient } from '../base';
 
 /**
@@ -25,6 +26,9 @@ interface WorkloadIdentityClientOptions {
   serviceAccount: string;
   token: string;
   audience: string;
+
+  oidcTokenRequestURL: string;
+  oidcTokenRequestToken: string;
 }
 
 /**
@@ -38,11 +42,17 @@ export class WorkloadIdentityClient implements AuthClient {
   readonly #token: string;
   readonly #audience: string;
 
+  readonly #oidcTokenRequestURL: string;
+  readonly #oidcTokenRequestToken: string;
+
   constructor(opts: WorkloadIdentityClientOptions) {
     this.#providerID = opts.providerID;
     this.#serviceAccount = opts.serviceAccount;
     this.#token = opts.token;
     this.#audience = opts.audience;
+
+    this.#oidcTokenRequestURL = opts.oidcTokenRequestURL;
+    this.#oidcTokenRequestToken = opts.oidcTokenRequestToken;
 
     this.#projectID =
       opts.projectID || this.extractProjectIDFromServiceAccountEmail(this.#serviceAccount);
@@ -71,8 +81,8 @@ export class WorkloadIdentityClient implements AuthClient {
   }
 
   /**
-   * getAuthToken generates a Google Cloud federated token using the provided OIDC
-   * token and Workload Identity Provider.
+   * getAuthToken generates a Google Cloud federated token using the provided
+   * OIDC token and Workload Identity Provider.
    */
   async getAuthToken(): Promise<string> {
     const stsURL = new URL('https://sts.googleapis.com/v1/token');
@@ -109,6 +119,49 @@ export class WorkloadIdentityClient implements AuthClient {
   }
 
   /**
+   * signJWT signs the given JWT using the IAM credentials endpoint.
+   *
+   * @param unsignedJWT The JWT to sign.
+   * @param delegates List of service account email address to use for
+   * impersonation in the delegation chain to sign the JWT.
+   */
+  async signJWT(unsignedJWT: string, delegates?: Array<string>): Promise<string> {
+    const serviceAccount = await this.getServiceAccount();
+    const federatedToken = await this.getAuthToken();
+
+    const signJWTURL = new URL(
+      `https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/${serviceAccount}:signJwt`,
+    );
+
+    const data: Record<string, string | Array<string>> = {
+      payload: unsignedJWT,
+    };
+    if (delegates && delegates.length > 0) {
+      data.delegates = delegates;
+    }
+
+    const opts = {
+      hostname: signJWTURL.hostname,
+      port: signJWTURL.port,
+      path: signJWTURL.pathname + signJWTURL.search,
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Authorization': `Bearer ${federatedToken}`,
+        'Content-Type': 'application/json',
+      },
+    };
+
+    try {
+      const resp = await BaseClient.request(opts, JSON.stringify(data));
+      const parsed = JSON.parse(resp);
+      return parsed['signedJwt'];
+    } catch (err) {
+      throw new Error(`Failed to sign JWT using ${serviceAccount}: ${err}`);
+    }
+  }
+
+  /**
    * getProjectID returns the project ID. If an override was given, the override
    * is returned. Otherwise, this will be the project ID that was extracted from
    * the service account key JSON.
@@ -129,22 +182,8 @@ export class WorkloadIdentityClient implements AuthClient {
    * createCredentialsFile creates a Google Cloud credentials file that can be
    * set as GOOGLE_APPLICATION_CREDENTIALS for gcloud and client libraries.
    */
-  async createCredentialsFile(outputDir: string): Promise<string> {
-    // Extract the request token and request URL from the environment. These
-    // are only set when an id-token is requested and the submitter has
-    // collaborator permissions.
-    const requestToken = process.env.ACTIONS_ID_TOKEN_REQUEST_TOKEN;
-    const requestURLRaw = process.env.ACTIONS_ID_TOKEN_REQUEST_URL;
-    if (!requestToken || !requestURLRaw) {
-      throw new Error(
-        'GitHub Actions did not inject $ACTIONS_ID_TOKEN_REQUEST_TOKEN or ' +
-          '$ACTIONS_ID_TOKEN_REQUEST_URL into this job. This most likely ' +
-          'means the GitHub Actions workflow permissions are incorrect, or ' +
-          'this job is being run from a fork. For more information, please ' +
-          'see the GitHub documentation at https://docs.github.com/en/actions/security-guides/automatic-token-authentication#permissions-for-the-github_token',
-      );
-    }
-    const requestURL = new URL(requestURLRaw);
+  async createCredentialsFile(outputPath: string): Promise<string> {
+    const requestURL = new URL(this.#oidcTokenRequestURL);
 
     // Append the audience value to the request.
     const params = requestURL.searchParams;
@@ -161,7 +200,7 @@ export class WorkloadIdentityClient implements AuthClient {
       credential_source: {
         url: requestURL,
         headers: {
-          Authorization: `Bearer ${requestToken}`,
+          Authorization: `Bearer ${this.#oidcTokenRequestToken}`,
         },
         format: {
           type: 'json',
@@ -170,6 +209,6 @@ export class WorkloadIdentityClient implements AuthClient {
       },
     };
 
-    return await writeSecureFile(outputDir, JSON.stringify(data));
+    return await writeSecureFile(outputPath, JSON.stringify(data));
   }
 }

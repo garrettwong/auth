@@ -71,6 +71,13 @@ inputs:
       impersonation in the chain.
     default: ''
     required: false
+  cleanup_credentials:
+    description: |-
+      If true, the action will remove any created credentials from the
+      filesystem upon completion. This only applies if "create_credentials_file"
+      is true.
+    default: true
+    required: false
 
   # access token params
   access_token_lifetime:
@@ -85,6 +92,13 @@ inputs:
       List of OAuth 2.0 access scopes to be included in the generated token.
       This is only valid when "token_format" is "access_token".
     default: 'https://www.googleapis.com/auth/cloud-platform'
+    required: false
+  access_token_subject:
+    description: |-
+      Email address of a user to impersonate for Domain-Wide Delegation Access
+      tokens created for Domain-Wide Delegation cannot have a lifetime beyond 1
+      hour. This is only valid when "token_format" is "access_token".
+    default: ''
     required: false
 
   # id token params
@@ -129,5 +143,6 @@ branding:
   color: 'blue'
 
 runs:
-  using: 'node12'
-  main: 'dist/index.js'
+  using: 'node16'
+  main: 'dist/main/index.js'
+  post: 'dist/post/index.js'
