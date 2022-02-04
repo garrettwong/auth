@@ -19,7 +19,7 @@ jobs:
         run: |
           token=${ACTIONS_ID_TOKEN_REQUEST_TOKEN}
           runtimeUrl=${ACTIONS_ID_TOKEN_REQUEST_URL}
-          runtimeUrl="${runtimeUrl}&audience=sigstore"
+          runtimeUrl="${runtimeUrl}&audience=google-wlif"
           echo ::set-output name=idtoken::$(curl -H "Authorization: bearer ${token}" ${runtimeUrl} | jq -r ".value")
           echo $idtoken
       - id: sts_token
