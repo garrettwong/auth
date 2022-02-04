@@ -2,7 +2,7 @@ name: GitHub Actions
 on: [push]
 jobs:
   Job-One:
-    runs-on: self-hosted
+    runs-on: 'ubuntu-latest'
     permissions:
       id-token: write
     steps:
