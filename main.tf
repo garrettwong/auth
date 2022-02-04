@@ -8,20 +8,20 @@ resource "google_storage_bucket" "static-site" {
 
 
 terraform {
-    required_providers {
-        google-beta = {
-            source = "hashicorp/google-beta"
-        }
+  required_providers {
+    google-beta = {
+      source = "hashicorp/google-beta"
     }
+  }
 }
 
 provider "google-beta" {
-    region      = "us-west1"
+  region = "us-west1"
 }
 
-   
+
 variable "project_id" {
-  type = string
+  type        = string
   description = "The Google Project ID"
 }
 resource "google_iam_workload_identity_pool" "gh_pool" {
@@ -35,7 +35,7 @@ resource "google_iam_workload_identity_pool_provider" "provider" {
   project                            = var.project_id
   workload_identity_pool_id          = google_iam_workload_identity_pool.gh_pool.workload_identity_pool_id
   workload_identity_pool_provider_id = "gh-provider"
-  attribute_mapping                  = {
+  attribute_mapping = {
     "google.subject" = "assertion.sub"
     "attribute.full" = "assertion.repository+assertion.ref"
   }
