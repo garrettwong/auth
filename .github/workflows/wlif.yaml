@@ -50,6 +50,7 @@ jobs:
               }
           EOF)
           echo $ACCESS_TOKEN
+          echo "DONE"
           echo ::set-output name=access_token::$ACCESS_TOKEN
       - name: 'Access secret'
         run: |-
