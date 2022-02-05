@@ -33,7 +33,7 @@ jobs:
       with:
         # token_format: 'access_token'
         create_credentials_file: true
-        workload_identity_provider: 'projects/{{ secrets.PROJECT_NUMBER }}/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
+        workload_identity_provider: '//iam.googleapis.com/projects/{{ secrets.PROJECT_NUMBER }}/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
         service_account: 'my-service-account@{{ secrets.PROJECT_ID }}.iam.gserviceaccount.com'
 
     # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
