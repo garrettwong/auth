@@ -1,7 +1,7 @@
 resource "google_compute_disk" "default" {
   project = var.project_id
 
-  name = "test-disk"
+  name = "test-disk2"
   type = "pd-ssd"
   zone = "us-central1-a"
   labels = {
@@ -27,7 +27,7 @@ provider "google-beta" {
 variable "project_id" {
   type        = string
   description = "The Google Project ID"
-  default     = "devops-6a24"
+  default     = "devops-6a23"
 }
 
 # resource "google_iam_workload_identity_pool" "gh_pool" {
