@@ -29,10 +29,11 @@ jobs:
     - id: 'gcloud'
       name: 'gcloud'
       run: |-
-        gcloud secrets versions access "latest" --secret "my-secret"
+        NAME=$(gcloud secrets versions access "latest" --secret "my-secret")
+        echo ::set-output name=disk_name::$NAME
 
     # Now you can run gcloud commands authenticated as the impersonated service account.
     - id: 'gcloudcreatedisk'
       name: 'gcloudcreatedisk'
       run: |-
-        gcloud compute disks create "latest2" --zone us-west1-a
+        gcloud compute disks create "${{ steps.gcloud.outputs.name }}" --zone us-west1-a
