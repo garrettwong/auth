@@ -1,9 +1,9 @@
 resource "google_compute_disk" "default" {
   project = var.project_id
 
-  name  = "test-disk"
-  type  = "pd-ssd"
-  zone  = "us-central1-a"
+  name = "test-disk"
+  type = "pd-ssd"
+  zone = "us-central1-a"
   labels = {
     environment = "dev"
   }
