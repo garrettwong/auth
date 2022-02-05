@@ -26,7 +26,7 @@ provider "google-beta" {
 variable "project_id" {
   type        = string
   description = "The Google Project ID"
-  default = "devops-6a24"
+  default     = "devops-6a24"
 }
 
 # resource "google_iam_workload_identity_pool" "gh_pool" {
