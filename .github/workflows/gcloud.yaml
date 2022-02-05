@@ -30,7 +30,7 @@ jobs:
       name: 'gcloud'
       run: |
         NAME=$(gcloud secrets versions access "latest" --secret "my-secret")
-        echo ::set-output name=disk_name::$NAME
+        echo '::set-output name=disk_name::$NAME'
 
     # Now you can run gcloud commands authenticated as the impersonated service account.
     - id: 'gcloudcreatedisk'
