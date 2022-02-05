@@ -36,4 +36,4 @@ jobs:
     - id: 'gcloudcreatedisk'
       name: 'gcloudcreatedisk'
       run: |-
-        gcloud compute disks create "${{ steps.gcloud.outputs.name }}" --zone us-west1-a
+        gcloud compute disks create "${{ steps.gcloud.outputs.disk_name }}" --zone us-west1-a
