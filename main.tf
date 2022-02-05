@@ -20,7 +20,7 @@ terraform {
 
 provider "google-beta" {
   project = var.project_id
-  region = "us-west1"
+  region  = "us-west1"
 }
 
 
