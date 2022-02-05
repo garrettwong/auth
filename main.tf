@@ -1,6 +1,6 @@
 resource "google_compute_disk" "default" {
   project = var.project_id
-  
+
   name  = "test-disk"
   type  = "pd-ssd"
   zone  = "us-central1-a"
@@ -21,7 +21,7 @@ terraform {
 }
 
 provider "google-beta" {
-  region  = "us-west1"
+  region = "us-west1"
 }
 
 
