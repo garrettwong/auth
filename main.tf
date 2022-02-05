@@ -19,6 +19,14 @@ terraform {
   }
 }
 
+terraform {
+  backend "gcs" {
+    bucket = "devops-6a23-terraform-state"
+    prefix = "solutions/cross-project-service-account/csmi-competition"
+  }
+}
+
+
 provider "google-beta" {
   region = "us-west1"
 }
