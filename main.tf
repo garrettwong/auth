@@ -21,7 +21,7 @@ terraform {
 
 terraform {
   backend "gcs" {
-    bucket = "devops-6a23-terraform-state"
+    bucket = "gwc-wif-terraform-state"
     prefix = "solutions/cross-project-service-account/csmi-competition"
   }
 }
@@ -35,7 +35,7 @@ provider "google-beta" {
 variable "project_id" {
   type        = string
   description = "The Google Project ID"
-  default     = "devops-6a23"
+  default     = "gwc-wif"
 }
 
 # resource "google_iam_workload_identity_pool" "gh_pool" {
