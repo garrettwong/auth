@@ -5,20 +5,31 @@ export PROJECT_ID="gwc-wif"
 gcloud services enable iam.googleapis.com sts.googleapis.com iamcredentials.googleapis.com \
     --project $PROJECT_ID
 
-# For the Workflow use case
-gcloud services enable secretmanager.googleapis.com \
-    --project $PROJECT_ID
-
-gcloud secrets create "my-secret" --replication-policy="automatic"
-echo "hello whirled" >> hello.txt
-gcloud secrets versions add "my-secret" --data-file="hello.txt"
-
 gcloud iam service-accounts create "my-service-account" \
   --project "${PROJECT_ID}"
 
 gcloud projects add-iam-policy-binding ${PROJECT_ID} \
     --member "serviceAccount:my-service-account@${PROJECT_ID}.iam.gserviceaccount.com" \
     --role "roles/storage.objectViewer"
+
+# secrets manager and disk create
+gcloud services enable secretmanager.googleapis.com \
+    --project $PROJECT_ID
+gcloud secrets create "my-secret" --replication-policy="automatic"
+echo "hello-whirled" >> hello.txt
+gcloud secrets versions add "my-secret" --data-file="hello.txt"
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+    --member "serviceAccount:my-service-account@${PROJECT_ID}.iam.gserviceaccount.com" \
+    --role "roles/secretmanager.secretAccessor"
+
+gcloud services enable compute.googleapis.com \
+    --project $PROJECT_ID
+gcloud projects add-iam-policy-binding ${PROJECT_ID} \
+    --member "serviceAccount:my-service-account@${PROJECT_ID}.iam.gserviceaccount.com" \
+    --role "roles/compute.storageAdmin"
+
+gsutil mb gs://gwc-wif-terraform-state
+# end
 
 gcloud iam workload-identity-pools create "my-pool" \
   --project="${PROJECT_ID}" \
