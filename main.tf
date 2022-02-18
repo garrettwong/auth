@@ -22,7 +22,7 @@ terraform {
 terraform {
   backend "gcs" {
     bucket = "gwc-wif-terraform-state"
-    prefix = "solutions/cross-project-service-account/csmi-competition"
+    prefix = "auth"
   }
 }
 
