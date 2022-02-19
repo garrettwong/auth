@@ -36,11 +36,7 @@ jobs:
     - id: 'gclouddeletedisk'
       name: 'gclouddeletedisk'
       run: |-
-        { # try
-            gcloud compute disks delete "${{ steps.gcloud.outputs.disk_name }}" --zone us-west1-a
-        } || { # catch
-            # save log for exception 
-        }
+        gcloud compute disks delete "${{ steps.gcloud.outputs.disk_name }}" --zone us-west1-a
         
     # Now you can run gcloud commands authenticated as the impersonated service account.
     - id: 'gcloudcreatedisk'
