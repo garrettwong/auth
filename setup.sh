@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-export PROJECT_ID="gwc-wif"
+export PROJECT_ID=$(gcloud config get-value project)
 
 gcloud services enable iam.googleapis.com sts.googleapis.com iamcredentials.googleapis.com \
 --project $PROJECT_ID
@@ -10,7 +10,7 @@ gcloud iam service-accounts create "my-service-account" \
 
 gcloud projects add-iam-policy-binding ${PROJECT_ID} \
 --member "serviceAccount:my-service-account@${PROJECT_ID}.iam.gserviceaccount.com" \
---role "roles/storage.objectViewer"
+--role "roles/storage.objectAdmin"
 
 # secrets manager and disk create
 gcloud services enable secretmanager.googleapis.com \

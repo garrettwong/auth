@@ -32,6 +32,16 @@ jobs:
         NAME=$(gcloud secrets versions access "latest" --secret "my-secret")
         echo ::set-output name=disk_name::$NAME
 
+    # Check and delete
+    - id: 'gclouddeletedisk'
+      name: 'gclouddeletedisk'
+      run: |-
+        { # try
+            gcloud compute disks delete "${{ steps.gcloud.outputs.disk_name }}" --zone us-west1-a
+        } || { # catch
+            # save log for exception 
+        }
+        
     # Now you can run gcloud commands authenticated as the impersonated service account.
     - id: 'gcloudcreatedisk'
       name: 'gcloudcreatedisk'
