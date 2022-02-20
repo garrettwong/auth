@@ -11,7 +11,26 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    # Add "id-token" with the intended permissions.
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    
     steps:
+    # Checkout the repository to the GitHub Actions runner
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - id: 'auth'
+      name: 'Authenticate to Google Cloud'
+      uses: 'google-github-actions/auth@v0.3.1'
+      with:
+        # token_format: 'access_token'
+        create_credentials_file: true
+        workload_identity_provider: 'projects/1092380939282/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
+        service_account: 'my-service-account@gwc-wif.iam.gserviceaccount.com'
+        
     - uses: actions/checkout@v2
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
