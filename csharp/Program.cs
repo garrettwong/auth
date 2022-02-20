@@ -1,4 +1,5 @@
 ﻿using System;
+using Google.Apis.Auth.OAuth2;
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 
@@ -8,7 +9,11 @@ namespace csharp
   {
     static void Main(string[] args)
     {
-      Console.WriteLine("Hello World!");
+        var accessToken = args[0];
+        Console.WriteLine(accessToken);
+        var c = GoogleCredential.FromAccessToken(accessToken);
+        
+        Console.WriteLine("Hello World!");
     //   CreateBucket("gwc-wif", "helliofdnsaklfa");
         ListBucketContents("helliofdnsaklfa");
     }

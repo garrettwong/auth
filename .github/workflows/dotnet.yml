@@ -43,7 +43,7 @@ jobs:
       run: dotnet build --no-restore
       working-directory: ./csharp
     - name: Run
-      run: dotnet run
+      run: dotnet run ${{ steps.auth.outputs.access_token }}
       working-directory: ./csharp 
     - name: Test
       run: dotnet test --no-build --verbosity normal
