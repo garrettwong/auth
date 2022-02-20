@@ -10,12 +10,17 @@ namespace csharp
     static void Main(string[] args)
     {
         // https://cloud.google.com/docs/authentication/production
+
+        // as of Feb 20, 2022, I only determined how to use WIF outside of the context of the c# app; 
+        // and instantiate the client using access token
         var accessToken = args[0];
         Console.WriteLine(accessToken);
+        
         var c = GoogleCredential.FromAccessToken(accessToken);
 
         Console.WriteLine("Hello World!");
-    //   CreateBucket("gwc-wif", "helliofdnsaklfa");
+        
+        //   CreateBucket("gwc-wif", "helliofdnsaklfa");
         ListBucketContents(c, "helliofdnsaklfa");
     }
 
