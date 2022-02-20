@@ -3,6 +3,10 @@
 set -x
 set -e
 
-echo 'this is the starting point'
+function test() {
+    echo 'this is the starting point'
+}
 
+
+test
 
