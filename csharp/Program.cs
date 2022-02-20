@@ -9,13 +9,14 @@ namespace csharp
   {
     static void Main(string[] args)
     {
+        // https://cloud.google.com/docs/authentication/production
         var accessToken = args[0];
         Console.WriteLine(accessToken);
         var c = GoogleCredential.FromAccessToken(accessToken);
-        
+
         Console.WriteLine("Hello World!");
     //   CreateBucket("gwc-wif", "helliofdnsaklfa");
-        ListBucketContents("helliofdnsaklfa");
+        ListBucketContents(c, "helliofdnsaklfa");
     }
 
     public static Bucket
@@ -30,8 +31,8 @@ namespace csharp
       return bucket;
     }
 
-    public static void ListBucketContents(string bucketName) {
-        var s = StorageClient.Create();
+    public static void ListBucketContents(GoogleCredential credential, string bucketName) {
+        var s = StorageClient.Create(credential);
         var x = s.ListObjects(bucketName);
         foreach(var a in x) {
             Console.WriteLine(a.Name);
