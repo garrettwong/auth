@@ -31,7 +31,6 @@ jobs:
         workload_identity_provider: 'projects/1092380939282/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
         service_account: 'my-service-account@gwc-wif.iam.gserviceaccount.com'
 
-    - uses: actions/checkout@v2
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
