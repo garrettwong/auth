@@ -7,6 +7,5 @@ function test() {
     echo 'this is the starting point'
 }
 
-
 test
 
