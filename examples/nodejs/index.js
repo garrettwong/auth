@@ -1,5 +1,6 @@
-const projectId = 'gwc-wif';
 console.log('nodejs with wif');
+
+const projectId = 'gwc-wif';
 
 // Imports the Google Cloud client library.
 const {Storage} = require('@google-cloud/storage');
