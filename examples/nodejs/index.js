@@ -1,4 +1,4 @@
-console.log('testing');
+console.log('nodejs with wif');
 
 const projectId = 'gwc-wif';
 
