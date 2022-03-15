@@ -26,16 +26,8 @@ terraform {
   }
 }
 
-
 provider "google-beta" {
   region = "us-west1"
-}
-
-
-variable "project_id" {
-  type        = string
-  description = "The Google Project ID"
-  default     = "gwc-wif"
 }
 
 # resource "google_iam_workload_identity_pool" "gh_pool" {
