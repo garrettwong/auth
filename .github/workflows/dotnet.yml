@@ -38,13 +38,13 @@ jobs:
         dotnet-version: 5.0.x
     - name: Restore dependencies
       run: dotnet restore
-      working-directory: ./examples/csharp
+      working-directory: ./csharp
     - name: Build
       run: dotnet build --no-restore
-      working-directory: ./examples/csharp
+      working-directory: ./csharp
     - name: Run
       run: dotnet run ${{ steps.auth.outputs.access_token }}
-      working-directory: ./examples/csharp 
+      working-directory: ./csharp 
     - name: Test
       run: dotnet test --no-build --verbosity normal
-      working-directory: ./examples/csharp
+      working-directory: ./csharp
