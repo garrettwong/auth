@@ -2,22 +2,23 @@
 
 set -e -x
 
-PROJECT_NUMBER="89279074870"
+PROJECT_ID=$(gcloud config get-value project)
+PROJECT_NUMBER=$(gcloud projects list --filter="projectId=${PROJECT_ID}" --format="value(projectNumber)")
 POOL_ID="my-pool"
 PROVIDER_ID="my-provider"
 
 SUBJECT_TOKEN_TYPE="urn:ietf:params:oauth:token-type:jwt"
 SUBJECT_TOKEN="Ajbkldfsnalkfdas98021j3nklkf0ds98aifnh01ni1"
 
-
+# requires sample.json
 STS_TOKEN=$(curl -0 -X POST https://sts.googleapis.com/v1/token \
     -H 'Content-Type: text/json; charset=utf-8' \
-    -d @sample.json)
+    -d @FILEPATH.json)
 
 echo $STS_TOKEN
 
 
-ACCESS_TOKEN=$(curl -0 -X POST https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/my-service-account@devops-6a23:generateAccessToken \
+ACCESS_TOKEN=$(curl -0 -X POST https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/workload-identity-sa@${PROJECT_ID}:generateAccessToken \
               -H "Content-Type: text/json; charset=utf-8" \
               -H "Authorization: Bearer $STS_TOKEN" \
               -d @- <<EOF | jq -r .accessToken
