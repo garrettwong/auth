@@ -29,6 +29,7 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} \
 --role "roles/compute.storageAdmin" --condition=None --quiet
 
 gsutil mb gs://gwc-wif-terraform-state
+gsutil iam ch "serviceAccount:workload-identity-sa@${PROJECT_ID}.iam.gserviceaccount.com:objectAdmin" gs://gwc-wif-terraform-state
 # end
 
 gcloud iam workload-identity-pools create "my-pool" \
