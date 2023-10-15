@@ -1,6 +1,6 @@
 console.log('nodejs with wif');
 
-const projectId = 'gws-sandbox';
+// const projectId = 'gws-sandbox';
 
 // Imports the Google Cloud client library.
 const {Storage} = require('@google-cloud/storage');
@@ -10,7 +10,7 @@ const {Storage} = require('@google-cloud/storage');
 // helper, see https://github.com/GoogleCloudPlatform/google-cloud-node/blob/master/docs/authentication.md
 // const projectId = 'project-id'
 // const keyFilename = '/path/to/keyfile.json'
-const storage = new Storage({projectId});//{projectId});
+const storage = new Storage();//{projectId});
 
 // Makes an authenticated API request.
 async function listBuckets() {
