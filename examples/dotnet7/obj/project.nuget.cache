@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "dgSpecHash": "7JRKQ5T5P01qM+Rev6NgjEpkZ/u6K/g5W1+/k9R5sl/US+XVR1zAsm/8YGBXpjYVZUUvUmrTaBl3KGsbQd83Zw==",
+  "success": true,
+  "projectFilePath": "/Users/garrettwong/Git/auth/examples/dotnet7/dotnet7.csproj",
+  "expectedPackageFiles": [
+    "/Users/garrettwong/.nuget/packages/google.api.gax/4.4.0/google.api.gax.4.4.0.nupkg.sha512",
+    "/Users/garrettwong/.nuget/packages/google.api.gax.rest/4.4.0/google.api.gax.rest.4.4.0.nupkg.sha512",
+    "/Users/garrettwong/.nuget/packages/google.apis/1.60.0/google.apis.1.60.0.nupkg.sha512",
+    "/Users/garrettwong/.nuget/packages/google.apis.auth/1.60.0/google.apis.auth.1.60.0.nupkg.sha512",
+    "/Users/garrettwong/.nuget/packages/google.apis.core/1.60.0/google.apis.core.1.60.0.nupkg.sha512",
+    "/Users/garrettwong/.nuget/packages/google.apis.storage.v1/1.60.0.2981/google.apis.storage.v1.1.60.0.2981.nupkg.sha512",
+    "/Users/garrettwong/.nuget/packages/google.cloud.storage.v1/4.6.0/google.cloud.storage.v1.4.6.0.nupkg.sha512",
+    "/Users/garrettwong/.nuget/packages/microsoft.bcl.asyncinterfaces/6.0.0/microsoft.bcl.asyncinterfaces.6.0.0.nupkg.sha512",
+    "/Users/garrettwong/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/6.0.0/microsoft.extensions.dependencyinjection.abstractions.6.0.0.nupkg.sha512",
+    "/Users/garrettwong/.nuget/packages/newtonsoft.json/13.0.3/newtonsoft.json.13.0.3.nupkg.sha512"
+  ],
+  "logs": []
+}
