@@ -1,6 +1,6 @@
 console.log('nodejs with wif');
 
-// const projectId = 'gws-sandbox';
+// const projectId = '';
 
 // Imports the Google Cloud client library.
 const {Storage} = require('@google-cloud/storage');

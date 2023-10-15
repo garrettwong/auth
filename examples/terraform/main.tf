@@ -19,12 +19,12 @@ terraform {
   }
 }
 
-terraform {
-  backend "gcs" {
-    bucket = "gws-sandbox-terraform-state"
-    prefix = "auth"
-  }
-}
+# terraform {
+#   backend "gcs" {
+#     bucket = ""
+#     prefix = "auth"
+#   }
+# }
 
 provider "google-beta" {
   region = "us-west1"
