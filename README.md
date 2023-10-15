@@ -66,7 +66,7 @@ jobs:
       name: 'Authenticate to Google Cloud'
       uses: 'google-github-actions/auth@v0'
       with:
-        workload_identity_provider: 'projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
+        workload_identity_provider: 'projects/123456789/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
         service_account: 'my-service-account@my-project.iam.gserviceaccount.com'
 
     # ... further steps are automatically authenticated
@@ -94,7 +94,7 @@ authentication for now.
     provided, this must be the full identifier which includes all parts:
 
     ```text
-    projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider
+    projects/123456789/locations/global/workloadIdentityPools/github-pool/providers/github-provider
     ```
 
 -   `service_account`: (Required) Email address or unique identifier of the Google Cloud
@@ -255,7 +255,7 @@ jobs:
       name: 'Authenticate to Google Cloud'
       uses: 'google-github-actions/auth@v0'
       with:
-        workload_identity_provider: 'projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
+        workload_identity_provider: 'projects/123456789/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
         service_account: 'my-service-account@my-project.iam.gserviceaccount.com'
 ```
 
@@ -356,7 +356,7 @@ jobs:
       name: 'Authenticate to Google Cloud'
       uses: 'google-github-actions/auth@v0'
       with:
-        workload_identity_provider: 'projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
+        workload_identity_provider: 'projects/123456789/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
         service_account: 'my-service-account@my-project.iam.gserviceaccount.com'
 
     # Install gcloud, `setup-gcloud` automatically picks up authentication from `auth`.
@@ -401,7 +401,7 @@ jobs:
       uses: 'google-github-actions/auth@v0'
       with:
         token_format: 'access_token' # <--
-        workload_identity_provider: 'projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
+        workload_identity_provider: 'projects/123456789/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
         service_account: 'my-service-account@my-project.iam.gserviceaccount.com'
         access_token_lifetime: '300s' # optional, default: '3600s' (1 hour)
 
@@ -441,7 +441,7 @@ jobs:
       uses: 'google-github-actions/auth@v0'
       with:
         token_format: 'access_token' # <--
-        workload_identity_provider: 'projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
+        workload_identity_provider: 'projects/123456789/locations/global/workloadIdentityPools/github-pool/providers/github-provider'
         service_account: 'my-service-account@my-project.iam.gserviceaccount.com'
         id_token_audience: 'https://myapp-uvehjacqzq.a.run.app' # required, value depends on target
         id_token_include_email: true # optional
@@ -498,7 +498,7 @@ Terraform module to automate your infrastructure provisioning. See [examples](ht
 1.  Create a Workload Identity Pool:
 
     ```sh
-    gcloud iam workload-identity-pools create "my-pool" \
+    gcloud iam workload-identity-pools create "github-pool" \
       --project="${PROJECT_ID}" \
       --location="global" \
       --display-name="Demo pool"
@@ -507,7 +507,7 @@ Terraform module to automate your infrastructure provisioning. See [examples](ht
 1.  Get the full ID of the Workload Identity **Pool**:
 
     ```sh
-    gcloud iam workload-identity-pools describe "my-pool" \
+    gcloud iam workload-identity-pools describe "github-pool" \
       --project="${PROJECT_ID}" \
       --location="global" \
       --format="value(name)"
@@ -523,10 +523,10 @@ Terraform module to automate your infrastructure provisioning. See [examples](ht
 1.  Create a Workload Identity **Provider** in that pool:
 
     ```sh
-    gcloud iam workload-identity-pools providers create-oidc "my-provider" \
+    gcloud iam workload-identity-pools providers create-oidc "github-provider" \
       --project="${PROJECT_ID}" \
       --location="global" \
-      --workload-identity-pool="my-pool" \
+      --workload-identity-pool="github-pool" \
       --display-name="Demo provider" \
       --attribute-mapping="google.subject=assertion.sub,attribute.actor=assertion.actor,attribute.repository=assertion.repository" \
       --issuer-uri="https://token.actions.githubusercontent.com"
@@ -563,10 +563,10 @@ Terraform module to automate your infrastructure provisioning. See [examples](ht
 1.  Extract the Workload Identity **Provider** resource name:
 
     ```sh
-    gcloud iam workload-identity-pools providers describe "my-provider" \
+    gcloud iam workload-identity-pools providers describe "github-provider" \
       --project="${PROJECT_ID}" \
       --location="global" \
-      --workload-identity-pool="my-pool" \
+      --workload-identity-pool="github-pool" \
       --format="value(name)"
     ```
 
@@ -592,7 +592,7 @@ mappings, see the [GitHub OIDC token documentation](https://docs.github.com/en/a
 {
   "jti": "...",
   "sub": "repo:username/reponame:ref:refs/heads/master",
-  "aud": "https://iam.googleapis.com/projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider",
+  "aud": "https://iam.googleapis.com/projects/123456789/locations/global/workloadIdentityPools/github-pool/providers/github-provider",
   "ref": "refs/heads/master",
   "sha": "d11880f4f451ee35192135525dc974c56a3c1b28",
   "repository": "username/reponame",

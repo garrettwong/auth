@@ -15,7 +15,7 @@ describe('WorkloadIdentityClient', () => {
   describe('#getProjectID', () => {
     it('extracts project ID from the service account email', async () => {
       const client = new WorkloadIdentityClient({
-        providerID: 'my-provider',
+        providerID: 'github-provider',
         token: 'my-token',
         serviceAccount: 'my-service@my-project.iam.gserviceaccount.com',
         audience: 'my-aud',
@@ -30,7 +30,7 @@ describe('WorkloadIdentityClient', () => {
     it('prefers the override if given', async () => {
       const client = new WorkloadIdentityClient({
         projectID: 'my-other-project',
-        providerID: 'my-provider',
+        providerID: 'github-provider',
         token: 'my-token',
         serviceAccount: 'my-service@my-project.iam.gserviceaccount.com',
         audience: 'my-aud',
@@ -45,7 +45,7 @@ describe('WorkloadIdentityClient', () => {
     it('throws an error when extraction fails', async () => {
       const fn = () => {
         return new WorkloadIdentityClient({
-          providerID: 'my-provider',
+          providerID: 'github-provider',
           token: 'my-token',
           serviceAccount: 'my-service@developers.google.com',
           audience: 'my-aud',
@@ -61,7 +61,7 @@ describe('WorkloadIdentityClient', () => {
     it('returns the provided value', async () => {
       const client = new WorkloadIdentityClient({
         projectID: 'my-project',
-        providerID: 'my-provider',
+        providerID: 'github-provider',
         serviceAccount: 'my-service@my-project.iam.gserviceaccount.com',
         token: 'my-token',
         audience: 'my-aud',
@@ -78,7 +78,7 @@ describe('WorkloadIdentityClient', () => {
       const outputFile = pathjoin(tmpdir(), randomFilename());
       const client = new WorkloadIdentityClient({
         projectID: 'my-project',
-        providerID: 'my-provider',
+        providerID: 'github-provider',
         serviceAccount: 'my-service@my-project.iam.gserviceaccount.com',
         token: 'my-token',
         audience: 'my-aud',
@@ -87,7 +87,7 @@ describe('WorkloadIdentityClient', () => {
       });
 
       const exp = {
-        audience: '//iam.googleapis.com/my-provider',
+        audience: '//iam.googleapis.com/github-provider',
         credential_source: {
           format: {
             subject_token_field_name: 'value',

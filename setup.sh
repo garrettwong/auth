@@ -28,33 +28,34 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} \
 --member "serviceAccount:workload-identity-sa@${PROJECT_ID}.iam.gserviceaccount.com" \
 --role "roles/compute.storageAdmin" --condition=None --quiet
 
-gsutil mb gs://gwc-wif-terraform-state
-gcloud projects add-iam-policy-binding gwc-wif \
+gsutil mb -p $PROJECT_ID gs://$PROJECT_ID-terraform-state
+gcloud projects add-iam-policy-binding $PROJECT_ID \
 --member "serviceAccount:workload-identity-sa@${PROJECT_ID}.iam.gserviceaccount.com" \
 --role "roles/storage.objectAdmin" --condition=None --quiet
-gsutil iam ch "serviceAccount:workload-identity-sa@${PROJECT_ID}.iam.gserviceaccount.com:objectAdmin" gs://gwc-wif-terraform-state
-# end
+gsutil iam ch "serviceAccount:workload-identity-sa@${PROJECT_ID}.iam.gserviceaccount.com:objectAdmin" \
+    gs://$PROJECT_ID-terraform-state
 
-gcloud iam workload-identity-pools create "my-pool" \
+
+gcloud iam workload-identity-pools create "github-pool" \
 --project="${PROJECT_ID}" \
 --location="global" \
 --display-name="Demo pool"
 
-gcloud iam workload-identity-pools describe "my-pool" \
+gcloud iam workload-identity-pools describe "github-pool" \
 --project="${PROJECT_ID}" \
 --location="global" \
 --format="value(name)"
 
-export WORKLOAD_IDENTITY_POOL_ID=$(gcloud iam workload-identity-pools describe "my-pool" \
+export WORKLOAD_IDENTITY_POOL_ID=$(gcloud iam workload-identity-pools describe "github-pool" \
     --project="${PROJECT_ID}" \
     --location="global" \
 --format="value(name)")
 
 function setup_github() {
-    gcloud iam workload-identity-pools providers create-oidc "my-provider" \
+    gcloud iam workload-identity-pools providers create-oidc "github-provider" \
     --project="${PROJECT_ID}" \
     --location="global" \
-    --workload-identity-pool="my-pool" \
+    --workload-identity-pool="github-pool" \
     --display-name="Demo provider" \
     --attribute-mapping="google.subject=assertion.sub,attribute.actor=assertion.actor,attribute.repository=assertion.repository" \
     --issuer-uri="https://token.actions.githubusercontent.com"
@@ -67,12 +68,11 @@ function setup_github() {
     --role="roles/iam.workloadIdentityUser" \
     --member="principalSet://iam.googleapis.com/${WORKLOAD_IDENTITY_POOL_ID}/attribute.repository/${REPO}"
     
-    gcloud iam workload-identity-pools providers describe "my-provider" \
+    gcloud iam workload-identity-pools providers describe "github-provider" \
     --project="${PROJECT_ID}" \
     --location="global" \
-    --workload-identity-pool="my-pool" \
+    --workload-identity-pool="github-pool" \
     --format="value(name)"
-    
     
     PROJECT_NUMBER=$(gcloud projects list --filter="projectId=${PROJECT_ID}" --format="value(projectNumber)")
     
@@ -84,7 +84,7 @@ function setup_gcp() {
     gcloud iam workload-identity-pools providers create-oidc "domain-ext" \
     --project="${PROJECT_ID}" \
     --location="global" \
-    --workload-identity-pool="my-pool" \
+    --workload-identity-pool="github-pool" \
     --display-name="Provider for GCP Identities" \
     --attribute-mapping="google.subject=assertion.sub,attribute.actor=assertion.actor" \
     --issuer-uri="https://accounts.google.com"

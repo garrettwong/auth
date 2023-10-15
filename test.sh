@@ -4,8 +4,8 @@ set -e -x
 
 PROJECT_ID=$(gcloud config get-value project)
 PROJECT_NUMBER=$(gcloud projects list --filter="projectId=${PROJECT_ID}" --format="value(projectNumber)")
-POOL_ID="my-pool"
-PROVIDER_ID="my-provider"
+POOL_ID="github-pool"
+PROVIDER_ID="github-provider"
 
 SUBJECT_TOKEN_TYPE="urn:ietf:params:oauth:token-type:jwt"
 SUBJECT_TOKEN="Ajbkldfsnalkfdas98021j3nklkf0ds98aifnh01ni1"

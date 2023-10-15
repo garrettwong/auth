@@ -30,7 +30,7 @@ inputs:
       The full identifier of the Workload Identity Provider, including the
       project number, pool name, and provider name. If provided, this must be
       the full identifier which includes all parts, for example:
-      "projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider".
+      "projects/123456789/locations/global/workloadIdentityPools/github-pool/providers/github-provider".
       This is mutually exclusive with "credentials_json".
     required: false
   service_account:
