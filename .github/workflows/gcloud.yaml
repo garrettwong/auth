@@ -33,14 +33,14 @@ jobs:
         echo ::set-output name=disk_name::$NAME
 
     # Check and delete
-    - id: 'gclouddeletedisk'
-      name: 'gclouddeletedisk'
+    - id: 'gcloud_describe_disk'
+      name: 'gcloud_describe_disk'
       continue-on-error: true
       run: |-
-        gcloud compute disks delete "${{ steps.gcloud.outputs.disk_name }}" --zone us-west1-a
+        gcloud compute disks describe "${{ steps.gcloud.outputs.disk_name }}" --zone us-west1-a
         
     # Now you can run gcloud commands authenticated as the impersonated service account.
-    - id: 'gcloudcreatedisk'
-      name: 'gcloudcreatedisk'
-      run: |-
-        gcloud compute disks create "${{ steps.gcloud.outputs.disk_name }}" --zone us-west1-a
+    # - id: 'gcloudcreatedisk'
+    #   name: 'gcloudcreatedisk'
+    #   run: |-
+    #     gcloud compute disks create "${{ steps.gcloud.outputs.disk_name }}" --zone us-west1-a

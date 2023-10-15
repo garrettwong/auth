@@ -10,13 +10,14 @@ gcloud iam service-accounts create "workload-identity-sa" \
 
 gcloud projects add-iam-policy-binding ${PROJECT_ID} \
 --member "serviceAccount:workload-identity-sa@${PROJECT_ID}.iam.gserviceaccount.com" \
---role "roles/storage.objectAdmin" --condition=None --quiet
+--role "roles/storage.admin" --condition=None --quiet
 
 # secrets manager and disk create
 gcloud services enable secretmanager.googleapis.com \
 --project $PROJECT_ID
 gcloud secrets create "my-secret" --replication-policy="automatic"
-echo "hello-whirled" >> hello.txt
+echo "github-actions-disk" >> hello.txt
+gcloud compute disks create github-actions-disk --zone us-west1-a
 gcloud secrets versions add "my-secret" --data-file="hello.txt"
 gcloud projects add-iam-policy-binding ${PROJECT_ID} \
 --member "serviceAccount:workload-identity-sa@${PROJECT_ID}.iam.gserviceaccount.com" \
@@ -31,7 +32,7 @@ gcloud projects add-iam-policy-binding ${PROJECT_ID} \
 gsutil mb -p $PROJECT_ID gs://$PROJECT_ID-terraform-state
 gcloud projects add-iam-policy-binding $PROJECT_ID \
 --member "serviceAccount:workload-identity-sa@${PROJECT_ID}.iam.gserviceaccount.com" \
---role "roles/storage.objectAdmin" --condition=None --quiet
+--role "roles/storage.admin" --condition=None --quiet
 gsutil iam ch "serviceAccount:workload-identity-sa@${PROJECT_ID}.iam.gserviceaccount.com:objectAdmin" \
     gs://$PROJECT_ID-terraform-state
 

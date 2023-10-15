@@ -27,7 +27,7 @@ gs://$PROJECT_ID-terraform-state
 
 gcloud projects remove-iam-policy-binding $PROJECT_ID \
 --member "serviceAccount:workload-identity-sa@${PROJECT_ID}.iam.gserviceaccount.com" \
---role "roles/storage.objectAdmin" --condition=None --quiet
+--role "roles/storage.admin" --condition=None --quiet
 
 # gsutil rm -rf gs://$PROJECT_ID-terraform-state
 
@@ -42,10 +42,11 @@ gcloud projects remove-iam-policy-binding ${PROJECT_ID} \
 gcloud secrets versions destroy 1 --secret "my-secret" --quiet
 rm hello.txt
 gcloud secrets delete "my-secret"
+gcloud compute disks delete github-actions-disk --zone us-west1-a
 
 gcloud projects remove-iam-policy-binding ${PROJECT_ID} \
 --member "serviceAccount:workload-identity-sa@${PROJECT_ID}.iam.gserviceaccount.com" \
---role "roles/storage.objectAdmin" --condition=None --quiet
+--role "roles/storage.admin" --condition=None --quiet
 
 gcloud iam service-accounts create "workload-identity-sa" \
 --project "${PROJECT_ID}"
