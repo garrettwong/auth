@@ -21,7 +21,7 @@ terraform {
 
 terraform {
   backend "gcs" {
-    bucket = "gwc-wif-terraform-state"
+    bucket = "gws-sandbox-terraform-state"
     prefix = "auth"
   }
 }
