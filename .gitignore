@@ -1,5 +1,8 @@
 FILEPATH.json
 
+# dotnet
+obj/
+
 .terraform
 
 node_modules/

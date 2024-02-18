@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 export PROJECT_ID=$(gcloud config get-value project)
+echo $PROJECT_ID
 
 gcloud services enable iam.googleapis.com sts.googleapis.com iamcredentials.googleapis.com \
 --project $PROJECT_ID
